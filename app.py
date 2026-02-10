@@ -2,33 +2,9 @@ import os
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-from supabase import create_client
 from datetime import datetime
 
-# ==================== SUPABASE CONFIG ====================
-# Cara yang BENAR membaca st.secrets
-try:
-    SUPABASE_URL = st.secrets["SUPABASE_URL"]
-    SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
-except Exception as e:
-    # Fallback ke environment variable jika tidak ada di secrets
-    SUPABASE_URL = os.getenv("SUPABASE_URL")
-    SUPABASE_KEY = os.getenv("SUPABASE_KEY")
-
-# Validasi apakah credentials ada
-if not SUPABASE_URL or not SUPABASE_KEY:
-    st.error("❌ Supabase credentials tidak ditemukan! Periksa Secrets di Streamlit Cloud")
-    st.stop()
-
-# Buat koneksi Supabase
-try:
-    supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-except Exception as e:
-    st.error(f"❌ Gagal membuat koneksi Supabase: {str(e)}")
-    st.stop()
-# Import koneksi supabase dari config
-from config import supabase
-# Import fungsi CRUD setelah supabase berhasil dibuat
+# Import fungsi CRUD (yang sudah otomatis baca secrets)
 from crud import (
     tambah_data, get_all_data, get_data_by_id, 
     update_data, delete_data,
@@ -762,6 +738,7 @@ elif menu == "📤 Upload Excel":
             st.error(f"❌ Error membaca file: {str(e)}")
 
             st.info("💡 Pastikan file Excel tidak corrupt dan format sesuai template")
+
 
 
 
