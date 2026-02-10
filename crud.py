@@ -3,10 +3,16 @@ import requests
 import streamlit as st
 
 # ==================== SUPABASE CONFIG ====================
+# Baca dari Streamlit secrets atau environment variable
 try:
+    # Prioritas: baca dari Streamlit secrets
     SUPABASE_URL = st.secrets["SUPABASE_URL"]
     SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
+    # Debug: tampilkan bahwa secrets berhasil dibaca
+    if st.session_state.get('debug_mode'):
+        st.sidebar.success(f"✅ Secrets loaded")
 except Exception as e:
+    # Fallback: baca dari .env (untuk testing lokal)
     try:
         from dotenv import load_dotenv
         load_dotenv()
@@ -15,8 +21,9 @@ except Exception as e:
     except:
         pass
 
+# Validasi credentials
 if not SUPABASE_URL or not SUPABASE_KEY:
-    st.error("❌ Supabase credentials tidak ditemukan!")
+    st.error("❌ Supabase credentials tidak ditemukan! Periksa Secrets di Streamlit Cloud")
     st.stop()
 
 headers = {
@@ -39,18 +46,21 @@ def tambah_data(nama, jenjang, instansi, kabupaten, tahun):
             "kabupaten": kabupaten,
             "tahun": tahun
         }
-        
         response = requests.post(url, headers=headers, json=data, timeout=10)
         
-        # Tampilkan error jika ada
+        # Debug response
         if response.status_code != 201:
-            st.error(f"❌ Error {response.status_code}")
-            st.code(response.text)
+            st.error(f"❌ Error {response.status_code}: {response.text}")
         
         return response.status_code == 201
-            
+    except requests.exceptions.Timeout:
+        st.error("❌ Koneksi timeout. Periksa jaringan internet Anda.")
+        return False
+    except requests.exceptions.ConnectionError:
+        st.error("❌ Gagal terhubung ke Supabase. Periksa SUPABASE_URL.")
+        return False
     except Exception as e:
-        st.error(f"❌ Error: {str(e)}")
+        st.error(f"❌ Error tambah data: {str(e)}")
         return False
 
 
@@ -64,17 +74,10 @@ def get_all_data():
             data = response.json()
             return [(d['id'], d['nama'], d['jenjang'], d['instansi'], d['kabupaten'], d['tahun']) for d in data]
         else:
-            # Tampilkan error hanya sekali
-            if 'data_error_shown' not in st.session_state:
-                st.warning(f"⚠️ Error mengambil data: {response.status_code}")
-                st.code(response.text)
-                st.session_state.data_error_shown = True
+            st.warning(f"⚠️ Error mengambil data: {response.status_code}")
             return []
-            
     except Exception as e:
-        if 'data_error_shown' not in st.session_state:
-            st.error(f"❌ Error: {str(e)}")
-            st.session_state.data_error_shown = True
+        st.error(f"❌ Error get data: {str(e)}")
         return []
 
 
@@ -89,7 +92,8 @@ def get_data_by_id(id_peserta):
             if data and len(data) > 0:
                 return data[0]
         return None
-    except:
+    except Exception as e:
+        st.error(f"❌ Error get data by id: {str(e)}")
         return None
 
 
@@ -111,7 +115,7 @@ def update_data(id_peserta, nama, jenjang, instansi, kabupaten, tahun):
         
         return response.status_code in [200, 204]
     except Exception as e:
-        st.error(f"❌ Error: {str(e)}")
+        st.error(f"❌ Error update data: {str(e)}")
         return False
 
 
@@ -126,7 +130,7 @@ def delete_data(id_peserta):
         
         return response.status_code in [200, 204]
     except Exception as e:
-        st.error(f"❌ Error: {str(e)}")
+        st.error(f"❌ Error delete data: {str(e)}")
         return False
 
 
@@ -142,9 +146,11 @@ def statistik_per_tahun():
             for item in data:
                 tahun = item['tahun']
                 stats[tahun] = stats.get(tahun, 0) + 1
+            
             return sorted([(tahun, count) for tahun, count in stats.items()])
         return []
-    except:
+    except Exception as e:
+        st.error(f"❌ Error statistik tahun: {str(e)}")
         return []
 
 
@@ -160,9 +166,11 @@ def statistik_per_jenjang():
             for item in data:
                 jenjang = item['jenjang']
                 stats[jenjang] = stats.get(jenjang, 0) + 1
+            
             return sorted([(jenjang, count) for jenjang, count in stats.items()], key=lambda x: x[1], reverse=True)
         return []
-    except:
+    except Exception as e:
+        st.error(f"❌ Error statistik jenjang: {str(e)}")
         return []
 
 
@@ -178,9 +186,11 @@ def statistik_per_kabupaten():
             for item in data:
                 kabupaten = item['kabupaten']
                 stats[kabupaten] = stats.get(kabupaten, 0) + 1
+            
             return sorted([(kabupaten, count) for kabupaten, count in stats.items()], key=lambda x: x[1], reverse=True)
         return []
-    except:
+    except Exception as e:
+        st.error(f"❌ Error statistik kabupaten: {str(e)}")
         return []
 
 
@@ -189,6 +199,7 @@ def bulk_insert(data_list):
     try:
         url = f"{SUPABASE_URL}/rest/v1/peserta_rdb"
         
+        # Convert data list ke format yang benar
         formatted_data = []
         for item in data_list:
             formatted_data.append({
@@ -202,10 +213,20 @@ def bulk_insert(data_list):
         response = requests.post(url, headers=headers, json=formatted_data, timeout=30)
         
         if response.status_code != 201:
-            st.error(f"❌ Error {response.status_code}: {response.text}")
+            st.error(f"❌ Bulk insert error {response.status_code}: {response.text}")
             return False
         
         return True
     except Exception as e:
-        st.error(f"❌ Error: {str(e)}")
+        st.error(f"❌ Error bulk insert: {str(e)}")
+        return False
+
+
+def test_connection():
+    """Test koneksi ke Supabase"""
+    try:
+        url = f"{SUPABASE_URL}/rest/v1/peserta_rdb?select=count&limit=1"
+        response = requests.get(url, headers=headers, timeout=5)
+        return response.status_code == 200
+    except:
         return False
