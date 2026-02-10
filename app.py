@@ -26,7 +26,8 @@ try:
 except Exception as e:
     st.error(f"❌ Gagal membuat koneksi Supabase: {str(e)}")
     st.stop()
-
+# Import koneksi supabase dari config
+from config import supabase
 # Import fungsi CRUD setelah supabase berhasil dibuat
 from crud import (
     tambah_data, get_all_data, get_data_by_id, 
@@ -761,6 +762,7 @@ elif menu == "📤 Upload Excel":
             st.error(f"❌ Error membaca file: {str(e)}")
 
             st.info("💡 Pastikan file Excel tidak corrupt dan format sesuai template")
+
 
 
 
