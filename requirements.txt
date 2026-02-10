@@ -1,7 +1,6 @@
 streamlit
 pandas
-python-dotenv
-requests
-openpyxl
-supabase
 plotly
+requests
+python-dotenv
+openpyxl
