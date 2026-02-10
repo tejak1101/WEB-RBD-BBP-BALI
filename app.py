@@ -2,6 +2,13 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+import os
+from supabase import create_client
+
+SUPABASE_URL = st.secrets.get("SUPABASE_URL", os.getenv("SUPABASE_URL"))
+SUPABASE_KEY = st.secrets.get("SUPABASE_KEY", os.getenv("SUPABASE_KEY"))
+
+supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 from crud import (
     tambah_data, get_all_data, get_data_by_id, 
     update_data, delete_data,
@@ -734,4 +741,5 @@ elif menu == "📤 Upload Excel":
         
         except Exception as e:
             st.error(f"❌ Error membaca file: {str(e)}")
+
             st.info("💡 Pastikan file Excel tidak corrupt dan format sesuai template")
