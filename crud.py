@@ -1,11 +1,22 @@
 import os
 import requests
-from dotenv import load_dotenv
+import streamlit as st
 
-load_dotenv()
+# Baca dari Streamlit secrets atau environment variable
+try:
+    # Prioritas: baca dari Streamlit secrets
+    SUPABASE_URL = st.secrets["SUPABASE_URL"]
+    SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
+except:
+    # Fallback: baca dari .env (untuk testing lokal)
+    from dotenv import load_dotenv
+    load_dotenv()
+    SUPABASE_URL = os.getenv("SUPABASE_URL")
+    SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+# Validasi credentials
+if not SUPABASE_URL or not SUPABASE_KEY:
+    raise Exception("❌ Supabase credentials tidak ditemukan!")
 
 headers = {
     "apikey": SUPABASE_KEY,
@@ -152,4 +163,5 @@ def bulk_insert(data_list):
         return response.status_code == 201
     except Exception as e:
         print(f"❌ Error bulk insert: {e}")
+
         return False
