@@ -8,16 +8,18 @@ try:
     # Prioritas: baca dari Streamlit secrets
     SUPABASE_URL = st.secrets["SUPABASE_URL"]
     SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
-    # Debug: tampilkan bahwa secrets berhasil dibaca
-    if st.session_state.get('debug_mode'):
-        st.sidebar.success(f"✅ Secrets loaded")
+    st.sidebar.success(f"✅ Secrets loaded")
+    st.sidebar.text(f"URL: {SUPABASE_URL}")
+    st.sidebar.text(f"Key: {SUPABASE_KEY[:30]}...")
 except Exception as e:
     # Fallback: baca dari .env (untuk testing lokal)
+    st.sidebar.error(f"❌ Failed to load secrets: {str(e)}")
     try:
         from dotenv import load_dotenv
         load_dotenv()
         SUPABASE_URL = os.getenv("SUPABASE_URL")
         SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+        st.sidebar.info("📁 Loaded from .env")
     except:
         pass
 
@@ -46,13 +48,34 @@ def tambah_data(nama, jenjang, instansi, kabupaten, tahun):
             "kabupaten": kabupaten,
             "tahun": tahun
         }
+        
+        # DEBUG: Tampilkan detail request
+        with st.expander("🔍 DEBUG - Tambah Data"):
+            st.write("**URL:**", url)
+            st.json(data)
+            st.write("**Headers:**")
+            st.json({
+                "apikey": SUPABASE_KEY[:30] + "...",
+                "Authorization": f"Bearer {SUPABASE_KEY[:30]}...",
+                "Content-Type": "application/json"
+            })
+        
         response = requests.post(url, headers=headers, json=data, timeout=10)
         
-        # Debug response
-        if response.status_code != 201:
-            st.error(f"❌ Error {response.status_code}: {response.text}")
+        # DEBUG: Tampilkan response
+        with st.expander("📡 DEBUG - Response"):
+            st.write(f"**Status Code:** {response.status_code}")
+            st.write("**Response Text:**")
+            st.code(response.text)
+            st.write("**Response Headers:**")
+            st.json(dict(response.headers))
         
-        return response.status_code == 201
+        if response.status_code == 201:
+            return True
+        else:
+            st.error(f"❌ Error {response.status_code}: {response.text}")
+            return False
+            
     except requests.exceptions.Timeout:
         st.error("❌ Koneksi timeout. Periksa jaringan internet Anda.")
         return False
@@ -61,6 +84,8 @@ def tambah_data(nama, jenjang, instansi, kabupaten, tahun):
         return False
     except Exception as e:
         st.error(f"❌ Error tambah data: {str(e)}")
+        import traceback
+        st.code(traceback.format_exc())
         return False
 
 
@@ -68,16 +93,31 @@ def get_all_data():
     """Ambil semua data peserta"""
     try:
         url = f"{SUPABASE_URL}/rest/v1/peserta_rdb?select=id,nama,jenjang,instansi,kabupaten,tahun&order=id.desc"
+        
+        # DEBUG
+        st.sidebar.write("---")
+        st.sidebar.write("**🔍 GET All Data**")
+        st.sidebar.text(f"URL: {url[:50]}...")
+        
         response = requests.get(url, headers=headers, timeout=10)
+        
+        # DEBUG
+        st.sidebar.write(f"Status: **{response.status_code}**")
         
         if response.status_code == 200:
             data = response.json()
+            st.sidebar.success(f"✅ {len(data)} records")
             return [(d['id'], d['nama'], d['jenjang'], d['instansi'], d['kabupaten'], d['tahun']) for d in data]
         else:
-            st.warning(f"⚠️ Error mengambil data: {response.status_code}")
+            st.sidebar.error(f"❌ Error: {response.status_code}")
+            with st.sidebar.expander("Error Details"):
+                st.code(response.text)
             return []
+            
     except Exception as e:
-        st.error(f"❌ Error get data: {str(e)}")
+        st.sidebar.error(f"❌ Exception in get_all_data")
+        with st.sidebar.expander("Exception Details"):
+            st.write(str(e))
         return []
 
 
@@ -91,6 +131,8 @@ def get_data_by_id(id_peserta):
             data = response.json()
             if data and len(data) > 0:
                 return data[0]
+        else:
+            st.warning(f"⚠️ Error get by ID: {response.status_code} - {response.text}")
         return None
     except Exception as e:
         st.error(f"❌ Error get data by id: {str(e)}")
@@ -111,7 +153,7 @@ def update_data(id_peserta, nama, jenjang, instansi, kabupaten, tahun):
         response = requests.patch(url, headers=headers, json=data, timeout=10)
         
         if response.status_code not in [200, 204]:
-            st.error(f"❌ Error {response.status_code}: {response.text}")
+            st.error(f"❌ Update Error {response.status_code}: {response.text}")
         
         return response.status_code in [200, 204]
     except Exception as e:
@@ -126,7 +168,7 @@ def delete_data(id_peserta):
         response = requests.delete(url, headers=headers, timeout=10)
         
         if response.status_code not in [200, 204]:
-            st.error(f"❌ Error {response.status_code}: {response.text}")
+            st.error(f"❌ Delete Error {response.status_code}: {response.text}")
         
         return response.status_code in [200, 204]
     except Exception as e:
@@ -210,6 +252,9 @@ def bulk_insert(data_list):
                 "tahun": int(item.get('tahun', 2024))
             })
         
+        # DEBUG
+        st.info(f"📤 Bulk inserting {len(formatted_data)} records...")
+        
         response = requests.post(url, headers=headers, json=formatted_data, timeout=30)
         
         if response.status_code != 201:
@@ -219,14 +264,29 @@ def bulk_insert(data_list):
         return True
     except Exception as e:
         st.error(f"❌ Error bulk insert: {str(e)}")
+        import traceback
+        st.code(traceback.format_exc())
         return False
 
 
 def test_connection():
     """Test koneksi ke Supabase"""
     try:
-        url = f"{SUPABASE_URL}/rest/v1/peserta_rdb?select=count&limit=1"
+        url = f"{SUPABASE_URL}/rest/v1/peserta_rdb?select=id&limit=1"
+        
+        st.sidebar.write("---")
+        st.sidebar.write("**🔌 Testing Connection...**")
+        
         response = requests.get(url, headers=headers, timeout=5)
-        return response.status_code == 200
-    except:
+        
+        if response.status_code == 200:
+            st.sidebar.success("✅ Connection OK!")
+            return True
+        else:
+            st.sidebar.error(f"❌ Connection Failed: {response.status_code}")
+            with st.sidebar.expander("Error Details"):
+                st.code(response.text)
+            return False
+    except Exception as e:
+        st.sidebar.error(f"❌ Connection Error: {str(e)}")
         return False
