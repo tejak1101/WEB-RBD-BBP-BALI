@@ -4,7 +4,7 @@ import pandas as pd
 import plotly.express as px
 from datetime import datetime
 
-# Import fungsi CRUD (yang sudah otomatis baca secrets)
+# Import fungsi CRUD
 from crud import (
     tambah_data, get_all_data, get_data_by_id, 
     update_data, delete_data,
@@ -81,7 +81,6 @@ st.markdown("""
 
 # ==================== SIDEBAR ====================
 with st.sidebar:
-    # Logo dengan HTML custom
     st.markdown("""
         <div style="text-align: center; padding: 20px 0;">
             <div style="background: white; 
@@ -114,13 +113,11 @@ with st.sidebar:
 if menu == "🏠 Dashboard":
     st.title("🏠 Dashboard Statistik RDB BBP Bali")
     
-    # Load data
     data = get_all_data()
     
     if data:
         df = pd.DataFrame(data, columns=["ID", "Nama", "Jenjang", "Instansi", "Kabupaten", "Tahun"])
         
-        # Metrics Row
         col1, col2, col3, col4 = st.columns(4)
         
         with col1:
@@ -137,7 +134,6 @@ if menu == "🏠 Dashboard":
         
         st.markdown("---")
         
-        # Charts Row 1
         col1, col2 = st.columns(2)
         
         with col1:
@@ -164,7 +160,6 @@ if menu == "🏠 Dashboard":
             )
             st.plotly_chart(fig, use_container_width=True)
         
-        # Charts Row 2
         col1, col2 = st.columns(2)
         
         with col1:
@@ -193,7 +188,6 @@ if menu == "🏠 Dashboard":
             )
             st.plotly_chart(fig, use_container_width=True)
         
-        # Recent Data
         st.markdown("---")
         st.subheader("📋 Data Terbaru (10 Terakhir)")
         st.dataframe(df.head(10), use_container_width=True, hide_index=True)
@@ -210,7 +204,6 @@ elif menu == "🔍 Filter Data":
     if data:
         df = pd.DataFrame(data, columns=["ID", "Nama", "Jenjang", "Instansi", "Kabupaten", "Tahun"])
         
-        # Filter Section
         st.markdown("### 🎯 Filter Data")
         col1, col2, col3, col4 = st.columns(4)
         
@@ -218,12 +211,10 @@ elif menu == "🔍 Filter Data":
             search_nama = st.text_input("🔎 Cari Nama", placeholder="Ketik nama...")
         
         with col2:
-            # Ambil semua jenjang unik dari database
             all_jenjang = ["Semua"] + sorted(df["Jenjang"].unique().tolist())
             filter_jenjang = st.selectbox("📚 Jenjang", options=all_jenjang)
         
         with col3:
-            # Ambil semua kabupaten unik dari database
             all_kabupaten = ["Semua"] + sorted(df["Kabupaten"].unique().tolist())
             filter_kabupaten = st.selectbox("📍 Kabupaten", options=all_kabupaten)
         
@@ -233,13 +224,10 @@ elif menu == "🔍 Filter Data":
                 options=["Semua"] + sorted(df["Tahun"].unique().tolist(), reverse=True)
             )
         
-        # Apply Filters
         df_filtered = df.copy()
         
         if search_nama:
-            df_filtered = df_filtered[
-                df_filtered["Nama"].str.contains(search_nama, case=False, na=False)
-            ]
+            df_filtered = df_filtered[df_filtered["Nama"].str.contains(search_nama, case=False, na=False)]
         
         if filter_jenjang != "Semua":
             df_filtered = df_filtered[df_filtered["Jenjang"] == filter_jenjang]
@@ -250,26 +238,12 @@ elif menu == "🔍 Filter Data":
         if filter_tahun != "Semua":
             df_filtered = df_filtered[df_filtered["Tahun"] == filter_tahun]
         
-        # Results
         st.markdown("---")
         st.info(f"📊 Menampilkan **{len(df_filtered)}** dari **{len(df)}** data")
         
         if len(df_filtered) > 0:
-            st.dataframe(
-                df_filtered,
-                use_container_width=True,
-                hide_index=True,
-                column_config={
-                    "ID": st.column_config.NumberColumn("ID", width="small"),
-                    "Nama": st.column_config.TextColumn("Nama", width="large"),
-                    "Jenjang": st.column_config.TextColumn("Jenjang", width="medium"),
-                    "Instansi": st.column_config.TextColumn("Instansi", width="large"),
-                    "Kabupaten": st.column_config.TextColumn("Kabupaten", width="medium"),
-                    "Tahun": st.column_config.NumberColumn("Tahun", width="small"),
-                }
-            )
+            st.dataframe(df_filtered, use_container_width=True, hide_index=True)
             
-            # Download
             csv = df_filtered.to_csv(index=False).encode('utf-8')
             st.download_button(
                 label="📥 Download Hasil Filter (CSV)",
@@ -280,7 +254,6 @@ elif menu == "🔍 Filter Data":
             )
         else:
             st.warning("❌ Tidak ada data yang sesuai dengan filter.")
-    
     else:
         st.info("📭 Belum ada data.")
 
@@ -294,19 +267,12 @@ elif menu == "➕ Tambah Data":
         with col1:
             nama = st.text_input("👤 Nama Lengkap*", placeholder="Contoh: Nyoman Hendrajaya, S.Pd")
             
-            # Jenjang bisa dipilih atau diketik manual
             jenjang_type = st.radio("Tipe Jenjang", ["Pilih dari list", "Ketik manual"], horizontal=True)
             
             if jenjang_type == "Pilih dari list":
-                jenjang = st.selectbox(
-                    "📚 Jenjang*", 
-                    ["SD", "SMP", "SMA", "SMK", "TK", "PAUD", "Disdikpora"]
-                )
+                jenjang = st.selectbox("📚 Jenjang*", ["SD", "SMP", "SMA", "SMK", "TK", "PAUD", "Disdikpora"])
             else:
-                jenjang = st.text_input(
-                    "📚 Jenjang*", 
-                    placeholder="Contoh: Disdikpora, DISDIK TABANAN, dll"
-                )
+                jenjang = st.text_input("📚 Jenjang*", placeholder="Contoh: Disdikpora, DISDIK TABANAN, dll")
             
             instansi = st.text_input("🏫 Instansi*", placeholder="Contoh: SMP N 3 DENPASAR")
         
@@ -338,7 +304,6 @@ elif menu == "✏️ Edit Data":
     if data:
         df = pd.DataFrame(data, columns=["ID", "Nama", "Jenjang", "Instansi", "Kabupaten", "Tahun"])
 
-        # Select data to edit
         st.markdown("### 🔍 Pilih Data yang Ingin Diedit")
         search = st.text_input("🔎 Cari berdasarkan Nama", placeholder="Ketik nama...")
 
@@ -349,7 +314,6 @@ elif menu == "✏️ Edit Data":
 
         st.dataframe(df_search, use_container_width=True, hide_index=True)
 
-        # Edit form
         st.markdown("---")
         st.markdown("### ✏️ Form Edit")
 
@@ -371,36 +335,19 @@ elif menu == "✏️ Edit Data":
 
                 with col1:
                     nama = st.text_input("👤 Nama", value=data_edit['nama'])
-
-                    # Jenjang bisa pilih atau ketik
                     jenjang_current = data_edit['jenjang']
 
                     if jenjang_current in ["SD", "SMP", "SMA", "SMK", "TK", "PAUD", "Disdikpora"]:
-                        jenjang_type = st.radio(
-                            "Tipe Jenjang",
-                            ["Pilih dari list", "Ketik manual"],
-                            horizontal=True,
-                            index=0
-                        )
+                        jenjang_type = st.radio("Tipe Jenjang", ["Pilih dari list", "Ketik manual"], horizontal=True, index=0)
                     else:
-                        jenjang_type = st.radio(
-                            "Tipe Jenjang",
-                            ["Pilih dari list", "Ketik manual"],
-                            horizontal=True,
-                            index=1
-                        )
+                        jenjang_type = st.radio("Tipe Jenjang", ["Pilih dari list", "Ketik manual"], horizontal=True, index=1)
 
                     if jenjang_type == "Pilih dari list":
                         try:
                             idx = ["SD", "SMP", "SMA", "SMK", "TK", "PAUD", "Disdikpora"].index(jenjang_current)
                         except:
                             idx = 0
-
-                        jenjang = st.selectbox(
-                            "📚 Jenjang",
-                            ["SD", "SMP", "SMA", "SMK", "TK", "PAUD", "Disdikpora"],
-                            index=idx
-                        )
+                        jenjang = st.selectbox("📚 Jenjang", ["SD", "SMP", "SMA", "SMK", "TK", "PAUD", "Disdikpora"], index=idx)
                     else:
                         jenjang = st.text_input("📚 Jenjang", value=jenjang_current)
 
@@ -419,7 +366,6 @@ elif menu == "✏️ Edit Data":
                         st.rerun()
                     else:
                         st.error("❌ Gagal update data.")
-
     else:
         st.info("📭 Belum ada data.")
 
@@ -434,7 +380,6 @@ elif menu == "🗑️ Hapus Data":
         
         st.warning("⚠️ **Perhatian:** Penghapusan data bersifat permanen dan tidak dapat dibatalkan!")
         
-        # Select data to delete
         st.markdown("### 🔍 Pilih Data yang Ingin Dihapus")
         search = st.text_input("🔎 Cari berdasarkan Nama", placeholder="Ketik nama...")
         
@@ -445,7 +390,6 @@ elif menu == "🗑️ Hapus Data":
         
         st.dataframe(df_search, use_container_width=True, hide_index=True)
         
-        # Delete form
         st.markdown("---")
         col1, col2 = st.columns([3, 1])
         
@@ -464,7 +408,6 @@ elif menu == "🗑️ Hapus Data":
                         st.error("❌ Gagal menghapus data.")
                 else:
                     st.error(f"❌ Data dengan ID {id_delete} tidak ditemukan.")
-    
     else:
         st.info("📭 Belum ada data.")
 
@@ -477,7 +420,6 @@ elif menu == "📊 Rekapan":
     if data:
         df = pd.DataFrame(data, columns=["ID", "Nama", "Jenjang", "Instansi", "Kabupaten", "Tahun"])
         
-        # Summary Cards
         st.markdown("### 📈 Ringkasan")
         col1, col2, col3, col4 = st.columns(4)
         
@@ -493,7 +435,6 @@ elif menu == "📊 Rekapan":
         with col4:
             st.metric("Kabupaten Berbeda", df["Kabupaten"].nunique())
         
-        # Detailed Statistics
         st.markdown("---")
         tab1, tab2, tab3, tab4 = st.tabs(["📚 Per Jenjang", "📅 Per Tahun", "📍 Per Kabupaten", "🏫 Per Instansi"])
         
@@ -535,7 +476,6 @@ elif menu == "📊 Rekapan":
             inst_count.columns = ["Instansi", "Jumlah"]
             st.dataframe(inst_count, use_container_width=True, hide_index=True)
         
-        # Download Full Report
         st.markdown("---")
         csv = df.to_csv(index=False).encode('utf-8')
         st.download_button(
@@ -545,7 +485,6 @@ elif menu == "📊 Rekapan":
             mime="text/csv",
             type="primary"
         )
-    
     else:
         st.info("📭 Belum ada data.")
 
@@ -557,13 +496,12 @@ elif menu == "📤 Upload Excel":
     ### 📋 Format File Excel
     File Excel harus memiliki kolom berikut (urutan bebas, **case-insensitive**):
     - **nama** - Nama lengkap peserta
-    - **jenjang** - Jenjang pendidikan (SD/SMP/SMA/SMK/Disdikpora/dll)
+    - **jenjang** - Jenjang pendidikan
     - **instansi** - Nama sekolah/instansi
     - **kabupaten** - Nama kabupaten/kota
     - **tahun** - Tahun (angka)
     """)
     
-    # Download Template
     template_data = {
         "nama": ["Nyoman Hendrajaya, S.Pd", "Kadek Astuyasa, S.Pd."],
         "jenjang": ["SMP", "Disdikpora"],
@@ -583,7 +521,6 @@ elif menu == "📤 Upload Excel":
     
     st.markdown("---")
     
-    # Upload File
     uploaded_file = st.file_uploader(
         "📂 Pilih file Excel atau CSV",
         type=["xlsx", "xls", "csv"],
@@ -592,7 +529,6 @@ elif menu == "📤 Upload Excel":
     
     if uploaded_file:
         try:
-            # Read file
             if uploaded_file.name.endswith('.csv'):
                 df_upload = pd.read_csv(uploaded_file)
             else:
@@ -600,23 +536,18 @@ elif menu == "📤 Upload Excel":
             
             st.success(f"✅ File berhasil dibaca! Total: {len(df_upload)} baris")
             
-            # Normalize column names (lowercase, strip whitespace)
             df_upload.columns = df_upload.columns.str.lower().str.strip()
             
             st.info(f"📋 Kolom yang terdeteksi: {', '.join(df_upload.columns.tolist())}")
             
-            # Preview
             st.markdown("### 👀 Preview Data")
             st.dataframe(df_upload.head(10), use_container_width=True)
             
-            # Validate columns
             required_cols = ["nama", "jenjang", "instansi", "kabupaten", "tahun"]
             
-            # Check for missing columns
             missing_cols = []
             for col in required_cols:
                 if col not in df_upload.columns:
-                    # Try to find similar column names
                     similar = [c for c in df_upload.columns if col in c or c in col]
                     if similar:
                         st.warning(f"⚠️ Kolom '{col}' tidak ditemukan, tapi ada '{similar[0]}'. Akan digunakan sebagai '{col}'.")
@@ -630,17 +561,13 @@ elif menu == "📤 Upload Excel":
             else:
                 st.success("✅ Semua kolom required tersedia!")
                 
-                # Clean data
                 df_upload = df_upload[required_cols].copy()
                 
-                # Strip whitespace from string columns
                 for col in ["nama", "jenjang", "instansi", "kabupaten"]:
                     df_upload[col] = df_upload[col].astype(str).str.strip()
                 
-                # Convert tahun to int
                 df_upload["tahun"] = pd.to_numeric(df_upload["tahun"], errors='coerce').fillna(0).astype(int)
                 
-                # Validation summary
                 st.markdown("### 📊 Validasi Data")
                 col1, col2, col3, col4 = st.columns(4)
                 
@@ -660,7 +587,6 @@ elif menu == "📤 Upload Excel":
                     invalid_tahun = (df_upload["tahun"] < 2000).sum() + (df_upload["tahun"] > 2100).sum()
                     st.metric("Tahun Valid", f"{len(df_upload) - invalid_tahun}/{len(df_upload)}")
                 
-                # Show invalid data if any
                 if null_count > 0:
                     st.warning("⚠️ Data dengan nilai kosong:")
                     st.dataframe(df_upload[df_upload.isnull().any(axis=1)], use_container_width=True)
@@ -669,14 +595,12 @@ elif menu == "📤 Upload Excel":
                     st.warning("⚠️ Data duplikat (nama + tahun sama):")
                     st.dataframe(df_upload[df_upload.duplicated(subset=["nama", "tahun"], keep=False)], use_container_width=True)
                 
-                # Show unique jenjang
                 unique_jenjang = df_upload['jenjang'].unique().tolist()
                 if len(unique_jenjang) <= 10:
                     st.info(f"📚 Jenjang yang ditemukan: {', '.join(unique_jenjang)}")
                 else:
                     st.info(f"📚 Jenjang yang ditemukan: {', '.join(unique_jenjang[:10])} ... (dan {len(unique_jenjang)-10} lainnya)")
                 
-                # Upload button
                 st.markdown("---")
                 col1, col2 = st.columns([3, 1])
                 
@@ -690,19 +614,16 @@ elif menu == "📤 Upload Excel":
                 
                 if upload_btn:
                     if null_count > 0:
-                        st.error("❌ Masih ada data yang kosong! Hapus atau isi data yang kosong terlebih dahulu.")
+                        st.error("❌ Masih ada data yang kosong!")
                     elif invalid_tahun > 0:
                         st.error("❌ Ada tahun yang tidak valid! Harus antara 2000-2100")
                     else:
                         with st.spinner("⏳ Mengupload data ke database..."):
-                            # Prepare data
                             data_to_insert = df_upload[required_cols].to_dict('records')
                             
-                            # Progress bar
                             progress_bar = st.progress(0)
                             status_text = st.empty()
                             
-                            # Insert one by one with progress
                             success_count = 0
                             failed_count = 0
                             
@@ -718,7 +639,6 @@ elif menu == "📤 Upload Excel":
                                 else:
                                     failed_count += 1
                                 
-                                # Update progress
                                 progress = (idx + 1) / len(data_to_insert)
                                 progress_bar.progress(progress)
                                 status_text.text(f"Uploading... {idx + 1}/{len(data_to_insert)}")
@@ -732,14 +652,8 @@ elif menu == "📤 Upload Excel":
                             elif success_count > 0:
                                 st.warning(f"⚠️ Berhasil: {success_count}, Gagal: {failed_count}")
                             else:
-                                st.error("❌ Gagal mengupload semua data. Periksa koneksi database.")
+                                st.error("❌ Gagal mengupload semua data.")
         
         except Exception as e:
             st.error(f"❌ Error membaca file: {str(e)}")
-
             st.info("💡 Pastikan file Excel tidak corrupt dan format sesuai template")
-
-
-
-
-
