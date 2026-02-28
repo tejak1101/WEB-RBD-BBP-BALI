@@ -629,7 +629,45 @@ def style_plotly(fig):
                      tickfont=dict(color=MUTED, size=11), linecolor="rgba(255,255,255,.08)")
     return fig
 
-COLORS = [GOLD_500, GOLD_400, "#e8a820", "#ffd740", "#b8860b", "#ffe57a", "#c8960c"]
+# ── Diverse multi-color palettes for charts ──
+# Pie / donut — vibrant jewel tones with gold accent
+COLORS_PIE = [
+    "#f5c518",  # gold
+    "#38bdf8",  # sky blue
+    "#a78bfa",  # violet
+    "#34d399",  # emerald
+    "#fb7185",  # rose
+    "#fb923c",  # orange
+    "#22d3ee",  # cyan
+    "#e879f9",  # fuchsia
+    "#a3e635",  # lime
+]
+
+# Bar charts — distinct per-bar gradient palette (used via marker_color list)
+COLORS_BAR = [
+    "#f5c518",  # gold
+    "#38bdf8",  # sky
+    "#a78bfa",  # violet
+    "#34d399",  # emerald
+    "#fb7185",  # rose
+    "#fb923c",  # orange
+    "#22d3ee",  # cyan
+    "#e879f9",  # fuchsia
+    "#a3e635",  # lime
+    "#f472b6",  # pink
+]
+
+# Sequential gradient for single-series bars (rank by value)
+COLOR_TEAL   = "#2dd4bf"   # teal
+COLOR_VIOLET = "#a78bfa"   # violet
+COLOR_SKY    = "#38bdf8"   # sky
+COLOR_ROSE   = "#fb7185"   # rose
+COLOR_EME    = "#34d399"   # emerald
+COLOR_ORG    = "#fb923c"   # orange
+
+def bar_colors(n):
+    """Return a list of n cycling colors for bar charts."""
+    return [COLORS_BAR[i % len(COLORS_BAR)] for i in range(n)]
 
 def ph(icon, title, subtitle, tag=""):
     t = f'<div class="kmd-ph-tag">{tag}</div>' if tag else ""
@@ -828,7 +866,7 @@ if menu == "🏠 Dashboard":
         with col1:
             sec("Distribusi per Jenjang")
             jc = df["Jenjang"].value_counts()
-            fig = px.pie(values=jc.values, names=jc.index, hole=0.48, color_discrete_sequence=COLORS)
+            fig = px.pie(values=jc.values, names=jc.index, hole=0.48, color_discrete_sequence=COLORS_PIE)
             fig.update_traces(textposition="inside", textinfo="percent+label",
                               textfont_size=12, textfont_color=NAVY_900,
                               marker=dict(line=dict(color=NAVY_800, width=2)))
@@ -838,7 +876,7 @@ if menu == "🏠 Dashboard":
             sec("Peserta per Tahun")
             tc = df["Tahun"].value_counts().sort_index()
             fig = px.bar(x=tc.index, y=tc.values, labels={"x":"Tahun","y":"Jumlah Peserta"})
-            fig.update_traces(marker_color=GOLD_500, marker_line_color=NAVY_800,
+            fig.update_traces(marker_color=bar_colors(len(tc)), marker_line_color=NAVY_800,
                               marker_line_width=1.5, opacity=0.92)
             st.plotly_chart(style_plotly(fig), use_container_width=True)
 
@@ -847,14 +885,14 @@ if menu == "🏠 Dashboard":
             sec("Distribusi per Kabupaten")
             kc = df["Kabupaten"].value_counts()
             fig = px.bar(x=kc.values, y=kc.index, orientation="h", labels={"x":"Jumlah","y":"Kabupaten"})
-            fig.update_traces(marker_color=GOLD_500, opacity=0.92)
+            fig.update_traces(marker_color=bar_colors(len(kc)), opacity=0.92)
             st.plotly_chart(style_plotly(fig), use_container_width=True)
 
         with col2:
             sec("Top 10 Instansi")
             ti = df["Instansi"].value_counts().head(10)
             fig = px.bar(x=ti.values, y=ti.index, orientation="h", labels={"x":"Jumlah Peserta","y":"Instansi"})
-            fig.update_traces(marker_color=GOLD_400, opacity=0.92)
+            fig.update_traces(marker_color=list(reversed(bar_colors(len(ti)))), opacity=0.92)
             st.plotly_chart(style_plotly(fig), use_container_width=True)
 
         st.markdown("---")
@@ -1028,8 +1066,10 @@ elif menu == "📊 Rekapan":
                 c1,c2 = st.columns([1,2])
                 with c1: st.dataframe(dfs, use_container_width=True, hide_index=True)
                 with c2:
-                    fig = px.bar(dfs, x="Jenjang", y="Jumlah")
-                    fig.update_traces(marker_color=GOLD_500, opacity=0.92)
+                    fig = px.bar(dfs, x="Jenjang", y="Jumlah", color="Jenjang",
+                                 color_discrete_sequence=COLORS_PIE)
+                    fig.update_traces(opacity=0.92, marker_line_color=NAVY_800, marker_line_width=1.5)
+                    fig.update_layout(showlegend=False)
                     st.plotly_chart(style_plotly(fig), use_container_width=True)
         with tab2:
             stats = statistik_per_tahun()
@@ -1039,8 +1079,9 @@ elif menu == "📊 Rekapan":
                 with c1: st.dataframe(dfs, use_container_width=True, hide_index=True)
                 with c2:
                     fig = px.line(dfs, x="Tahun", y="Jumlah", markers=True)
-                    fig.update_traces(line=dict(color=GOLD_500,width=3),
-                                      marker=dict(color=GOLD_400,size=10,line=dict(color=NAVY_800,width=2)))
+                    fig.update_traces(line=dict(color=COLOR_SKY, width=3),
+                                      marker=dict(color=COLOR_TEAL, size=10,
+                                                  line=dict(color=NAVY_800, width=2)))
                     st.plotly_chart(style_plotly(fig), use_container_width=True)
         with tab3:
             stats = statistik_per_kabupaten()
@@ -1049,8 +1090,10 @@ elif menu == "📊 Rekapan":
                 c1,c2 = st.columns([1,2])
                 with c1: st.dataframe(dfs, use_container_width=True, hide_index=True)
                 with c2:
-                    fig = px.bar(dfs, y="Kabupaten", x="Jumlah", orientation="h")
-                    fig.update_traces(marker_color=GOLD_500, opacity=0.92)
+                    fig = px.bar(dfs, y="Kabupaten", x="Jumlah", orientation="h",
+                                 color="Kabupaten", color_discrete_sequence=COLORS_PIE)
+                    fig.update_traces(opacity=0.92)
+                    fig.update_layout(showlegend=False)
                     st.plotly_chart(style_plotly(fig), use_container_width=True)
         with tab4:
             ic = df["Instansi"].value_counts().reset_index()
