@@ -4,10 +4,10 @@ import pandas as pd
 import plotly.express as px
 from datetime import datetime
 
-# ===== DEBUG SUPABASE (SEMENTARA) =====
-SUPABASE_URL = st.secrets.get("SUPABASE_URL", os.getenv("SUPABASE_URL"))
-st.write("DEBUG SUPABASE_URL:", SUPABASE_URL)
-# =====================================
+# # ===== DEBUG SUPABASE (SEMENTARA) =====
+# SUPABASE_URL = st.secrets.get("SUPABASE_URL", os.getenv("SUPABASE_URL"))
+# st.write("DEBUG SUPABASE_URL:", SUPABASE_URL)
+# # =====================================
 
 # Import fungsi CRUD (TIDAK DIUBAH)
 from crud import (
@@ -1323,3 +1323,4 @@ elif menu == "📤 Upload Excel":
         except Exception as e:
             st.error(f"❌ Error membaca file: {str(e)}")
             st.info("💡 Pastikan file tidak corrupt dan format sesuai template")
+
