@@ -21,583 +21,755 @@ from validation import validate_input
 # ==================== PAGE CONFIG ====================
 st.set_page_config(
     page_title="RDB BBP Bali 2026",
-    page_icon="📚",
+    page_icon="🏛️",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# ==================== KEMENDIKDASMEN OFFICIAL THEME ====================
-# Palet warna resmi mengikuti kemendikdasmen.go.id
-KMD_RED       = "#c0001a"      # Merah utama Kemendikdasmen
-KMD_RED_DARK  = "#8b0013"      # Merah gelap (hover / gradient)
-KMD_RED_LIGHT = "#f9e6e8"      # Merah muda (background aksen)
-KMD_GOLD      = "#e8a020"      # Kuning emas (aksen)
-KMD_GOLD_LIGHT= "#fef3dc"      # Kuning emas muda
-KMD_NAVY      = "#1a2340"      # Biru tua / teks gelap
-KMD_DARK      = "#0f1520"      # Teks utama (hampir hitam)
-KMD_MUTED     = "#6b7280"      # Teks sekunder
-KMD_BORDER    = "#e5e7eb"      # Border
-KMD_BG        = "#f8f9fc"      # Background utama
-KMD_CARD      = "#ffffff"      # Card background
-KMD_SUCCESS   = "#16a34a"      # Hijau sukses
+# ==================== COLOR PALETTE — KEMENDIKDASMEN OFFICIAL ====================
+# Diambil langsung dari screenshot kemendikdasmen.go.id
+NAVY_900  = "#060f1e"   # Terdalam — sidebar background
+NAVY_800  = "#0a1628"   # Background utama header (dominant)
+NAVY_700  = "#0d1f3c"   # Gradient tengah
+NAVY_600  = "#0e2d5a"   # Gradient bawah / card bg
+NAVY_500  = "#1a3d72"   # Hover states
+NAVY_400  = "#1e4d8c"   # Border accent
+GOLD_500  = "#f5c518"   # Kuning emas utama (Kemen"dik"dasmen)
+GOLD_400  = "#ffd740"   # Gold terang
+GOLD_300  = "#ffe57a"   # Gold muda
+WHITE     = "#ffffff"
+MUTED     = "#94a3b8"   # Teks sekunder
+BORDER    = "rgba(255,255,255,0.10)"
+BORDER_GOLD = "rgba(245,197,24,0.30)"
+
+# Logo Kemendikdasmen (URL resmi)
+LOGO_URL = "https://kemendikdasmen.go.id/web/image/res.company/1/logo/unique_id"
 
 st.markdown(f"""
 <style>
-/* =====================================================
-   KEMENDIKDASMEN OFFICIAL DESIGN SYSTEM
+/* ================================================================
+   KEMENDIKDASMEN PREMIUM DESIGN SYSTEM v2
+   Dominan: Dark Navy (#0a1628) + Gold (#f5c518)
    Referensi: kemendikdasmen.go.id
-   ===================================================== */
+   ================================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap');
 
 :root {{
-  --red:        {KMD_RED};
-  --red-dark:   {KMD_RED_DARK};
-  --red-light:  {KMD_RED_LIGHT};
-  --gold:       {KMD_GOLD};
-  --gold-light: {KMD_GOLD_LIGHT};
-  --navy:       {KMD_NAVY};
-  --dark:       {KMD_DARK};
-  --muted:      {KMD_MUTED};
-  --border:     {KMD_BORDER};
-  --bg:         {KMD_BG};
-  --card:       {KMD_CARD};
+  --navy-900: {NAVY_900};
+  --navy-800: {NAVY_800};
+  --navy-700: {NAVY_700};
+  --navy-600: {NAVY_600};
+  --navy-500: {NAVY_500};
+  --gold:     {GOLD_500};
+  --gold-l:   {GOLD_400};
+  --white:    {WHITE};
+  --muted:    {MUTED};
+  --border:   {BORDER};
+  --bg:       {NAVY_800};
 }}
 
-/* ── Global ────────────────────────────────────────── */
-html, body, [data-testid="stAppViewContainer"] {{
-  background: var(--bg) !important;
+/* ── Base ───────────────────────────────────────────────────── */
+html, body {{
+  background: {NAVY_800} !important;
   font-family: 'Plus Jakarta Sans', 'Segoe UI', sans-serif !important;
 }}
 
+[data-testid="stAppViewContainer"] {{
+  background: linear-gradient(160deg, {NAVY_800} 0%, {NAVY_700} 55%, {NAVY_900} 100%) !important;
+  min-height: 100vh;
+}}
+
+[data-testid="stMain"] {{
+  background: transparent !important;
+}}
+
 .block-container {{
-  padding-top: 0rem !important;
-  padding-bottom: 2rem;
-  max-width: 1440px;
+  padding-top: 0 !important;
+  padding-bottom: 3rem;
+  max-width: 1500px;
 }}
 
 h1, h2, h3, h4, h5 {{
   font-family: 'Plus Jakarta Sans', sans-serif !important;
   font-weight: 800 !important;
-  color: var(--dark) !important;
-  letter-spacing: -0.3px;
+  color: {WHITE} !important;
 }}
 
-p, li, span, div {{
+p, span, div, label, li {{
   font-family: 'Plus Jakarta Sans', sans-serif;
 }}
 
-/* ── Hero Header Bar ────────────────────────────────── */
-.kmd-hero {{
-  background: linear-gradient(135deg, var(--red-dark) 0%, var(--red) 50%, #d4001f 100%);
-  border-radius: 0 0 28px 28px;
-  padding: 0;
-  margin: -1rem -1rem 1.5rem -1rem;
-  box-shadow: 0 8px 40px rgba(192,0,26,.25);
+/* ── TOP NAVBAR ─────────────────────────────────────────────── */
+.kmd-navbar {{
+  background: linear-gradient(90deg, {NAVY_900} 0%, {NAVY_800} 45%, {NAVY_700} 100%);
+  border-bottom: 1px solid {BORDER_GOLD};
+  margin: -1rem -1rem 0 -1rem;
+  padding: 0 30px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 78px;
+  box-shadow: 0 4px 40px rgba(0,0,0,.60);
   position: relative;
   overflow: hidden;
+  z-index: 100;
 }}
 
-.kmd-hero::before {{
-  content: '';
-  position: absolute;
-  top: -60px; right: -60px;
-  width: 300px; height: 300px;
-  border-radius: 50%;
-  background: rgba(255,255,255,.06);
+.kmd-navbar::before {{
+  content:'';
+  position:absolute; top:0; left:0; right:0;
+  height:2px;
+  background: linear-gradient(90deg, transparent 0%, {GOLD_500} 30%, {GOLD_400} 60%, transparent 100%);
+  opacity:.70;
 }}
 
-.kmd-hero::after {{
-  content: '';
-  position: absolute;
-  bottom: -80px; left: 30%;
-  width: 400px; height: 200px;
-  border-radius: 50%;
-  background: rgba(232,160,32,.10);
+.kmd-navbar::after {{
+  content:'';
+  position:absolute; bottom:0; left:0; right:0;
+  height:1px;
+  background: linear-gradient(90deg, transparent, rgba(245,197,24,.40), transparent);
 }}
 
-.kmd-hero-inner {{
-  position: relative;
-  z-index: 1;
-  padding: 20px 28px;
-  display: flex;
-  align-items: center;
-  gap: 18px;
-}}
-
-.kmd-hero-emblem {{
-  width: 64px;
-  height: 64px;
-  background: rgba(255,255,255,.15);
-  border: 2px solid rgba(255,255,255,.30);
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 32px;
-  backdrop-filter: blur(8px);
+.kmd-nb-logo {{
+  height: 50px; width: auto;
+  object-fit: contain;
+  filter: brightness(1.05) drop-shadow(0 2px 8px rgba(245,197,24,.20));
   flex-shrink: 0;
 }}
 
-.kmd-hero-text .sup {{
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 2.5px;
-  text-transform: uppercase;
-  color: rgba(255,255,255,.75);
-  margin-bottom: 3px;
-}}
-
-.kmd-hero-text .title {{
-  font-size: 20px;
+.kmd-nb-brand {{
+  font-size: 21px;
   font-weight: 900;
-  color: #ffffff;
-  line-height: 1.15;
+  letter-spacing: -.3px;
+  flex-shrink: 0;
 }}
 
-.kmd-hero-text .sub {{
-  font-size: 12px;
-  color: rgba(255,255,255,.80);
-  margin-top: 5px;
-  font-weight: 500;
+.kmd-nb-brand .k {{ color: {WHITE}; }}
+.kmd-nb-brand .d {{ color: {GOLD_500}; text-shadow: 0 0 20px rgba(245,197,24,.50); }}
+.kmd-nb-brand .s {{ color: {WHITE}; }}
+
+.kmd-nb-sep {{
+  width: 1px; height: 38px;
+  background: linear-gradient(180deg, transparent, rgba(255,255,255,.18), transparent);
+  margin: 0 6px;
 }}
 
-.kmd-hero-badge {{
-  margin-left: auto;
-  background: var(--gold);
-  color: var(--dark);
+.kmd-nb-sub {{
   font-size: 11px;
-  font-weight: 800;
-  padding: 6px 14px;
-  border-radius: 999px;
-  letter-spacing: .5px;
-  white-space: nowrap;
-  box-shadow: 0 4px 12px rgba(232,160,32,.35);
+  color: {MUTED};
+  font-weight: 500;
+  line-height: 1.5;
 }}
 
-/* ── Page Title Banner ──────────────────────────────── */
-.kmd-page-banner {{
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-left: 5px solid var(--red);
-  border-radius: 16px;
-  padding: 14px 20px;
-  margin-bottom: 18px;
+.kmd-nb-right {{
+  margin-left: auto;
   display: flex;
   align-items: center;
   gap: 14px;
-  box-shadow: 0 4px 18px rgba(15,21,32,.05);
 }}
 
-.kmd-page-banner .pg-icon {{
-  width: 44px; height: 44px;
-  background: var(--red-light);
-  border-radius: 14px;
+.kmd-nb-date {{
+  text-align: right;
+  font-size: 11px;
+  color: {MUTED};
+  font-weight: 600;
+  line-height: 1.6;
+}}
+
+.kmd-nb-live {{
+  background: linear-gradient(135deg, {GOLD_500}, {GOLD_400});
+  color: {NAVY_900};
+  font-size: 10px;
+  font-weight: 900;
+  padding: 5px 14px;
+  border-radius: 999px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  box-shadow: 0 4px 16px rgba(245,197,24,.45);
+  white-space: nowrap;
+}}
+
+/* ── Page Header ────────────────────────────────────────────── */
+.kmd-ph {{
+  background: linear-gradient(135deg,
+    rgba(255,255,255,.035) 0%,
+    rgba(245,197,24,.05) 100%);
+  border: 1px solid rgba(255,255,255,.08);
+  border-left: 4px solid {GOLD_500};
+  border-radius: 18px;
+  padding: 17px 24px;
+  margin: 20px 0 22px 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 8px 32px rgba(0,0,0,.25),
+              inset 0 1px 0 rgba(255,255,255,.04);
+}}
+
+.kmd-ph-icon {{
+  width: 52px; height: 52px;
+  background: linear-gradient(135deg, {GOLD_500} 0%, {GOLD_400} 100%);
+  border-radius: 16px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 22px;
+  font-size: 26px;
   flex-shrink: 0;
+  box-shadow: 0 6px 22px rgba(245,197,24,.35);
 }}
 
-.kmd-page-banner .pg-title {{
-  font-size: 17px;
-  font-weight: 800;
-  color: var(--dark);
+.kmd-ph-title {{
+  font-size: 19px;
+  font-weight: 900;
+  color: {WHITE};
   line-height: 1.2;
 }}
 
-.kmd-page-banner .pg-sub {{
+.kmd-ph-sub {{
   font-size: 12px;
-  color: var(--muted);
-  margin-top: 2px;
+  color: {MUTED};
+  margin-top: 3px;
   font-weight: 500;
 }}
 
-/* ── Sidebar ────────────────────────────────────────── */
+.kmd-ph-tag {{
+  margin-left: auto;
+  background: rgba(245,197,24,.10);
+  border: 1px solid {BORDER_GOLD};
+  color: {GOLD_500};
+  font-size: 9px;
+  font-weight: 900;
+  padding: 5px 12px;
+  border-radius: 999px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}}
+
+/* ── Section title ──────────────────────────────────────────── */
+.kmd-sec {{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 800;
+  color: {WHITE};
+  margin: 8px 0 16px 0;
+}}
+
+.kmd-sec::before {{
+  content:'';
+  display:inline-block;
+  width:4px; height:20px;
+  background: linear-gradient(180deg, {GOLD_500}, {GOLD_400});
+  border-radius: 4px;
+  flex-shrink: 0;
+}}
+
+/* ── Sidebar ────────────────────────────────────────────────── */
 [data-testid="stSidebar"] {{
-  background: #ffffff !important;
-  border-right: 1px solid var(--border) !important;
+  background: {NAVY_900} !important;
+  border-right: 1px solid rgba(245,197,24,.12) !important;
 }}
 
 [data-testid="stSidebar"] > div:first-child {{
-  background: #ffffff;
+  background: {NAVY_900} !important;
 }}
 
-.kmd-sidebar-brand {{
-  background: linear-gradient(135deg, var(--red) 0%, var(--red-dark) 100%);
-  border-radius: 20px;
-  padding: 18px 16px;
+.kmd-sb-hdr {{
+  background: linear-gradient(145deg, rgba(14,45,90,.90) 0%, {NAVY_900} 100%);
+  border: 1px solid {BORDER_GOLD};
+  border-radius: 18px;
+  padding: 20px 16px;
   margin-bottom: 6px;
   position: relative;
   overflow: hidden;
 }}
 
-.kmd-sidebar-brand::after {{
-  content: '';
-  position: absolute;
-  bottom: -25px; right: -25px;
-  width: 100px; height: 100px;
-  border-radius: 50%;
-  background: rgba(255,255,255,.08);
+.kmd-sb-hdr::before {{
+  content:'';
+  position:absolute; top:-50px; right:-50px;
+  width:150px; height:150px; border-radius:50%;
+  background: radial-gradient(circle, rgba(245,197,24,.10), transparent 70%);
 }}
 
-.kmd-sidebar-logo {{
-  width: 54px; height: 54px;
-  background: rgba(255,255,255,.15);
-  border: 2px solid rgba(255,255,255,.25);
+.kmd-sb-hdr::after {{
+  content:'';
+  position:absolute; bottom:0; left:10%; right:10%;
+  height:1px;
+  background: linear-gradient(90deg, transparent, {GOLD_500}, transparent);
+  opacity:.35;
+}}
+
+.kmd-sb-logo-box {{
+  width:58px; height:58px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid {BORDER_GOLD};
   border-radius: 16px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 26px;
-  margin-bottom: 12px;
+  display:flex; align-items:center; justify-content:center;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 18px rgba(245,197,24,.12);
+  overflow: hidden;
 }}
 
-.kmd-sidebar-title {{
-  font-size: 15px;
-  font-weight: 900;
-  color: #ffffff;
-  line-height: 1.2;
+.kmd-sb-logo-box img {{
+  width:44px; height:44px;
+  object-fit: contain;
+  filter: brightness(1.1);
 }}
 
-.kmd-sidebar-sub {{
-  font-size: 11px;
-  color: rgba(255,255,255,.75);
-  margin-top: 4px;
-  font-weight: 500;
+.kmd-sb-title {{
+  font-size:15px; font-weight:900; color:{WHITE}; line-height:1.2; margin-bottom:4px;
 }}
 
-.kmd-sidebar-date {{
-  margin-top: 12px;
-  padding-top: 10px;
-  border-top: 1px solid rgba(255,255,255,.20);
-  font-size: 11px;
-  color: rgba(255,255,255,.70);
-  font-weight: 500;
+.kmd-sb-sub {{
+  font-size:11px; color:{MUTED}; font-weight:500; line-height:1.5;
 }}
 
-.kmd-nav-label {{
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--muted);
-  padding: 0 4px;
-  margin-bottom: 4px;
-  margin-top: 16px;
+.kmd-sb-date {{
+  margin-top:12px; padding-top:10px;
+  border-top:1px solid rgba(255,255,255,.08);
+  font-size:11px; color:rgba(245,197,24,.65); font-weight:600;
 }}
 
-/* Radio as nav pills */
+.kmd-nav-lbl {{
+  font-size:10px; font-weight:800;
+  letter-spacing:2px; text-transform:uppercase;
+  color:rgba(245,197,24,.45); padding:0 4px;
+  margin:14px 0 6px 0;
+}}
+
+/* Nav radio pills */
 div[role="radiogroup"] > label {{
-  background: #ffffff !important;
-  border: 1.5px solid var(--border) !important;
-  border-radius: 14px !important;
-  padding: 10px 14px !important;
-  margin: 4px 0 !important;
+  background: rgba(255,255,255,.025) !important;
+  border: 1px solid rgba(255,255,255,.07) !important;
+  border-radius: 13px !important;
+  padding: 10px 13px !important;
+  margin: 3px 0 !important;
   cursor: pointer;
-  transition: all .18s ease !important;
+  transition: all .20s cubic-bezier(.4,0,.2,1) !important;
   font-weight: 600 !important;
-  color: var(--dark) !important;
+  color: {MUTED} !important;
 }}
 
 div[role="radiogroup"] > label:hover {{
-  border-color: var(--red) !important;
-  background: var(--red-light) !important;
-  color: var(--red) !important;
-  transform: translateX(3px) !important;
-  box-shadow: 0 6px 14px rgba(192,0,26,.10) !important;
+  border-color: rgba(245,197,24,.38) !important;
+  background: rgba(245,197,24,.07) !important;
+  color: {GOLD_500} !important;
+  transform: translateX(4px) !important;
+  box-shadow: 4px 0 16px rgba(245,197,24,.08) !important;
 }}
 
 div[role="radiogroup"] input:checked + div {{
-  color: var(--red) !important;
+  color: {GOLD_500} !important;
   font-weight: 800 !important;
 }}
 
-/* ── Metric Cards ───────────────────────────────────── */
+[data-testid="stSidebar"] p,
+[data-testid="stSidebar"] span,
+[data-testid="stSidebar"] label {{
+  color: {MUTED};
+}}
+
+.kmd-sb-foot {{
+  background: rgba(255,255,255,.025);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 14px;
+  padding: 13px;
+  text-align: center;
+  margin-top: 8px;
+}}
+
+/* ── Metric Cards ───────────────────────────────────────────── */
 [data-testid="stMetric"] {{
-  background: var(--card) !important;
-  border: 1px solid var(--border) !important;
-  border-top: 4px solid var(--red) !important;
+  background: linear-gradient(145deg,
+    rgba(255,255,255,.04) 0%,
+    rgba(245,197,24,.045) 100%) !important;
+  border: 1px solid rgba(255,255,255,.08) !important;
+  border-top: 3px solid {GOLD_500} !important;
   border-radius: 18px !important;
-  padding: 16px 18px !important;
-  box-shadow: 0 6px 20px rgba(15,21,32,.06) !important;
-  transition: transform .2s ease, box-shadow .2s ease;
+  padding: 18px 20px !important;
+  box-shadow: 0 8px 30px rgba(0,0,0,.28),
+              inset 0 1px 0 rgba(255,255,255,.04) !important;
+  transition: transform .22s ease, box-shadow .22s ease;
 }}
 
 [data-testid="stMetric"]:hover {{
-  transform: translateY(-3px);
-  box-shadow: 0 12px 28px rgba(192,0,26,.12) !important;
+  transform: translateY(-5px) !important;
+  box-shadow: 0 16px 42px rgba(0,0,0,.38),
+              0 0 0 1px rgba(245,197,24,.18) !important;
 }}
 
 [data-testid="stMetricLabel"] > div {{
-  color: var(--muted) !important;
+  color: {MUTED} !important;
   font-weight: 700 !important;
-  font-size: 13px !important;
-  letter-spacing: .2px;
+  font-size: 11px !important;
+  letter-spacing: .6px;
+  text-transform: uppercase;
 }}
 
 [data-testid="stMetricValue"] > div {{
-  color: var(--red) !important;
+  color: {GOLD_500} !important;
   font-weight: 900 !important;
-  font-size: 28px !important;
-  letter-spacing: -0.5px;
+  font-size: 32px !important;
+  letter-spacing: -1px;
+  text-shadow: 0 0 30px rgba(245,197,24,.25);
 }}
 
-/* ── Cards / Containers ─────────────────────────────── */
+/* ── Generic Card/Container ─────────────────────────────────── */
 [data-testid="stVerticalBlockBorderWrapper"] {{
-  background: var(--card) !important;
-  border: 1px solid var(--border) !important;
+  background: rgba(255,255,255,.025) !important;
+  border: 1px solid rgba(255,255,255,.07) !important;
   border-radius: 20px !important;
-  box-shadow: 0 8px 24px rgba(15,21,32,.06) !important;
+  box-shadow: 0 10px 36px rgba(0,0,0,.28) !important;
+  backdrop-filter: blur(10px);
 }}
 
-/* ── Buttons ────────────────────────────────────────── */
+/* ── Buttons ────────────────────────────────────────────────── */
 .stButton > button {{
   font-family: 'Plus Jakarta Sans', sans-serif !important;
   font-weight: 800 !important;
   border-radius: 12px !important;
-  padding: 0.55rem 1.2rem !important;
-  transition: all .18s ease !important;
-  letter-spacing: .2px;
-  border: 2px solid transparent !important;
+  padding: 0.55rem 1.3rem !important;
+  transition: all .20s cubic-bezier(.4,0,.2,1) !important;
+  letter-spacing: .3px;
 }}
 
 .stButton > button[kind="primary"] {{
-  background: linear-gradient(135deg, var(--red), var(--red-dark)) !important;
-  color: #ffffff !important;
-  box-shadow: 0 6px 18px rgba(192,0,26,.30) !important;
+  background: linear-gradient(135deg, {GOLD_500} 0%, {GOLD_400} 100%) !important;
+  color: {NAVY_900} !important;
+  border: none !important;
+  box-shadow: 0 6px 22px rgba(245,197,24,.38) !important;
 }}
 
 .stButton > button[kind="primary"]:hover {{
-  box-shadow: 0 10px 24px rgba(192,0,26,.40) !important;
-  transform: translateY(-2px) !important;
-  filter: brightness(1.05);
+  box-shadow: 0 12px 32px rgba(245,197,24,.55) !important;
+  transform: translateY(-3px) !important;
+  filter: brightness(1.06);
 }}
 
 .stButton > button[kind="secondary"] {{
-  background: #ffffff !important;
-  color: var(--red) !important;
-  border: 2px solid var(--red) !important;
+  background: rgba(245,197,24,.06) !important;
+  color: {GOLD_500} !important;
+  border: 1.5px solid {BORDER_GOLD} !important;
 }}
 
 .stButton > button[kind="secondary"]:hover {{
-  background: var(--red-light) !important;
+  background: rgba(245,197,24,.12) !important;
+  border-color: {GOLD_500} !important;
   transform: translateY(-2px) !important;
-  box-shadow: 0 8px 18px rgba(192,0,26,.12) !important;
+  box-shadow: 0 8px 22px rgba(245,197,24,.18) !important;
 }}
 
-/* ── Inputs ─────────────────────────────────────────── */
-input, textarea, select {{
+/* ── Inputs ─────────────────────────────────────────────────── */
+input, textarea {{
+  background: rgba(255,255,255,.05) !important;
+  border: 1.5px solid rgba(255,255,255,.11) !important;
   border-radius: 12px !important;
+  color: {WHITE} !important;
   font-family: 'Plus Jakarta Sans', sans-serif !important;
-  border: 1.5px solid var(--border) !important;
-  transition: border-color .18s ease !important;
+  transition: border-color .18s ease, box-shadow .18s ease !important;
 }}
 
 input:focus, textarea:focus {{
-  border-color: var(--red) !important;
-  box-shadow: 0 0 0 3px rgba(192,0,26,.10) !important;
+  border-color: {GOLD_500} !important;
+  box-shadow: 0 0 0 3px rgba(245,197,24,.14) !important;
+  background: rgba(255,255,255,.07) !important;
+}}
+
+input::placeholder, textarea::placeholder {{
+  color: rgba(148,163,184,.45) !important;
 }}
 
 [data-testid="stTextInput"] label,
 [data-testid="stNumberInput"] label,
 [data-testid="stSelectbox"] label,
-[data-testid="stRadio"] label {{
+[data-testid="stRadio"] > label,
+[data-testid="stFileUploader"] label {{
+  color: rgba(148,163,184,.85) !important;
   font-weight: 700 !important;
-  color: var(--dark) !important;
-  font-size: 13px !important;
+  font-size: 11px !important;
+  letter-spacing: .5px;
+  text-transform: uppercase;
 }}
 
-/* ── Dataframe ──────────────────────────────────────── */
+/* Selectbox */
+[data-testid="stSelectbox"] > div > div {{
+  background: rgba(255,255,255,.05) !important;
+  border: 1.5px solid rgba(255,255,255,.11) !important;
+  border-radius: 12px !important;
+  color: {WHITE} !important;
+  transition: border-color .18s ease !important;
+}}
+
+[data-testid="stSelectbox"] > div > div:focus-within {{
+  border-color: {GOLD_500} !important;
+  box-shadow: 0 0 0 3px rgba(245,197,24,.14) !important;
+}}
+
+/* Number input */
+[data-testid="stNumberInput"] > div {{
+  background: rgba(255,255,255,.05) !important;
+  border: 1.5px solid rgba(255,255,255,.11) !important;
+  border-radius: 12px !important;
+}}
+
+/* ── Dataframe ──────────────────────────────────────────────── */
 [data-testid="stDataFrame"] {{
   border-radius: 16px !important;
   overflow: hidden !important;
-  border: 1px solid var(--border) !important;
-  box-shadow: 0 4px 14px rgba(15,21,32,.05) !important;
+  border: 1px solid rgba(255,255,255,.08) !important;
+  box-shadow: 0 8px 28px rgba(0,0,0,.28) !important;
 }}
 
-/* ── Tabs ───────────────────────────────────────────── */
+/* ── Tabs ───────────────────────────────────────────────────── */
+[data-testid="stTabs"] [role="tablist"] {{
+  background: rgba(255,255,255,.03) !important;
+  border: 1px solid rgba(255,255,255,.07) !important;
+  border-radius: 14px;
+  padding: 4px;
+  gap: 4px;
+}}
+
 [data-testid="stTabs"] button {{
   font-weight: 700 !important;
   font-family: 'Plus Jakarta Sans', sans-serif !important;
-  border-radius: 10px 10px 0 0 !important;
-}}
-
-[data-testid="stTabs"] button[aria-selected="true"] {{
-  color: var(--red) !important;
-  border-bottom: 3px solid var(--red) !important;
-  font-weight: 900 !important;
-}}
-
-/* ── Alerts & Info Boxes ────────────────────────────── */
-[data-testid="stAlert"] {{
-  border-radius: 14px !important;
-  border-left: 5px solid var(--red) !important;
-  font-weight: 600 !important;
-}}
-
-/* File uploader */
-[data-testid="stFileUploaderDropzone"] {{
-  border-radius: 18px !important;
-  border: 2px dashed rgba(192,0,26,.35) !important;
-  background: rgba(192,0,26,.025) !important;
+  border-radius: 10px !important;
+  color: {MUTED} !important;
   transition: all .18s ease !important;
 }}
 
-[data-testid="stFileUploaderDropzone"]:hover {{
-  border-color: var(--red) !important;
-  background: rgba(192,0,26,.05) !important;
+[data-testid="stTabs"] button:hover {{
+  color: {GOLD_500} !important;
+  background: rgba(245,197,24,.07) !important;
 }}
 
-/* Download button */
+[data-testid="stTabs"] button[aria-selected="true"] {{
+  background: linear-gradient(135deg,
+    rgba(245,197,24,.18), rgba(245,197,24,.08)) !important;
+  color: {GOLD_500} !important;
+  font-weight: 900 !important;
+  border: 1px solid {BORDER_GOLD} !important;
+}}
+
+/* ── Alerts ─────────────────────────────────────────────────── */
+[data-testid="stAlert"] {{
+  background: rgba(255,255,255,.03) !important;
+  border: 1px solid rgba(255,255,255,.07) !important;
+  border-left: 4px solid {GOLD_500} !important;
+  border-radius: 14px !important;
+  color: {WHITE} !important;
+}}
+
+[data-testid="stAlert"] p {{ color: {WHITE} !important; }}
+div[role="alert"]         {{ color: {WHITE} !important; }}
+
+/* ── File Uploader ──────────────────────────────────────────── */
+[data-testid="stFileUploaderDropzone"] {{
+  background: rgba(255,255,255,.025) !important;
+  border: 2px dashed {BORDER_GOLD} !important;
+  border-radius: 18px !important;
+  transition: all .20s ease !important;
+}}
+
+[data-testid="stFileUploaderDropzone"]:hover {{
+  background: rgba(245,197,24,.05) !important;
+  border-color: {GOLD_500} !important;
+  box-shadow: 0 0 0 4px rgba(245,197,24,.07) !important;
+}}
+
+[data-testid="stFileUploaderDropzone"] span,
+[data-testid="stFileUploaderDropzone"] p {{
+  color: {MUTED} !important;
+}}
+
+/* ── Download Button ────────────────────────────────────────── */
 [data-testid="stDownloadButton"] > button {{
   border-radius: 12px !important;
   font-weight: 800 !important;
   font-family: 'Plus Jakarta Sans', sans-serif !important;
 }}
 
-/* Divider */
-hr {{
-  border: none !important;
-  border-top: 1.5px solid var(--border) !important;
-  margin: 20px 0 !important;
-}}
-
-/* Subheader with red accent */
-.kmd-section-title {{
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 16px;
-  font-weight: 800;
-  color: var(--dark);
-  margin: 4px 0 14px 0;
-}}
-
-.kmd-section-title::before {{
-  content: '';
-  display: inline-block;
-  width: 4px;
-  height: 20px;
-  background: var(--red);
-  border-radius: 4px;
-  flex-shrink: 0;
-}}
-
-/* Gold accent info pill */
-.kmd-info-pill {{
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: var(--gold-light);
-  color: #92610a;
-  font-size: 12px;
-  font-weight: 700;
-  padding: 5px 12px;
-  border-radius: 999px;
-  border: 1px solid rgba(232,160,32,.25);
-  margin-bottom: 10px;
-}}
-
-/* Status bar on sidebar bottom */
-.kmd-sidebar-footer {{
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 10px 12px;
-  text-align: center;
-  margin-top: 8px;
-}}
-
-.kmd-stat-row {{
-  display: flex;
-  gap: 10px;
-}}
-
-.kmd-stat-card {{
-  flex: 1;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-top: 3px solid var(--gold);
-  border-radius: 14px;
-  padding: 12px;
-  text-align: center;
-}}
-
-/* Spinner color override */
-.stSpinner > div {{
-  border-top-color: var(--red) !important;
-}}
-
-/* Warning border */
-[data-testid="stAlert"][kind="warning"] {{
-  border-left-color: var(--gold) !important;
-}}
-
-[data-testid="stAlert"][kind="success"] {{
-  border-left-color: #16a34a !important;
-}}
-
-/* Progress bar */
-[data-testid="stProgressBar"] > div > div {{
-  background: linear-gradient(90deg, var(--red), var(--gold)) !important;
+/* ── Progress bar ───────────────────────────────────────────── */
+[data-testid="stProgressBar"] > div {{
+  background: rgba(255,255,255,.08) !important;
   border-radius: 999px !important;
 }}
 
-/* Selectbox */
-[data-testid="stSelectbox"] > div > div {{
-  border-radius: 12px !important;
-  border: 1.5px solid var(--border) !important;
+[data-testid="stProgressBar"] > div > div {{
+  background: linear-gradient(90deg, {GOLD_500}, {GOLD_400}) !important;
+  border-radius: 999px !important;
+  box-shadow: 0 0 12px rgba(245,197,24,.40);
 }}
 
+/* ── Divider ────────────────────────────────────────────────── */
+hr {{
+  border: none !important;
+  height: 1px !important;
+  background: linear-gradient(90deg,
+    transparent, rgba(255,255,255,.10), transparent) !important;
+  margin: 22px 0 !important;
+}}
+
+/* ── Spinner ────────────────────────────────────────────────── */
+.stSpinner > div {{
+  border-top-color: {GOLD_500} !important;
+}}
+
+/* ── Markdown Text ──────────────────────────────────────────── */
+[data-testid="stMarkdownContainer"] p,
+[data-testid="stMarkdownContainer"] li {{
+  color: {MUTED} !important;
+}}
+
+[data-testid="stMarkdownContainer"] strong {{
+  color: {WHITE} !important; font-weight: 800;
+}}
+
+[data-testid="stMarkdownContainer"] h3 {{
+  color: {WHITE} !important; font-weight: 800 !important;
+}}
+
+/* ── Form ───────────────────────────────────────────────────── */
+[data-testid="stForm"] {{
+  background: rgba(255,255,255,.02) !important;
+  border: 1px solid rgba(255,255,255,.07) !important;
+  border-radius: 20px !important;
+  padding: 22px !important;
+  box-shadow: 0 8px 34px rgba(0,0,0,.22) !important;
+}}
+
+/* ── Radio inside form ──────────────────────────────────────── */
+[data-testid="stRadio"] > div > label {{
+  color: {MUTED} !important;
+  background: rgba(255,255,255,.03) !important;
+  border: 1px solid rgba(255,255,255,.08) !important;
+  border-radius: 10px !important;
+  padding: 7px 12px !important;
+  transition: all .16s ease !important;
+}}
+
+[data-testid="stRadio"] > div > label:hover {{
+  color: {GOLD_500} !important;
+  border-color: {BORDER_GOLD} !important;
+  background: rgba(245,197,24,.06) !important;
+}}
+
+/* ── Scrollbar ──────────────────────────────────────────────── */
+::-webkit-scrollbar {{ width: 5px; height: 5px; }}
+::-webkit-scrollbar-track {{ background: {NAVY_900}; }}
+::-webkit-scrollbar-thumb {{
+  background: rgba(245,197,24,.28); border-radius: 999px;
+}}
+::-webkit-scrollbar-thumb:hover {{
+  background: rgba(245,197,24,.50);
+}}
+
+/* ── Misc fixes ─────────────────────────────────────────────── */
+[data-testid="stDecoration"] {{ display: none !important; }}
+[data-testid="stHeader"]      {{ background: transparent !important; }}
 </style>
 """, unsafe_allow_html=True)
 
-# ==================== PLOTLY STYLE HELPER ====================
+# ==================== PLOTLY DARK THEME ====================
 def style_plotly(fig):
     fig.update_layout(
-        paper_bgcolor="white",
-        plot_bgcolor="white",
-        font=dict(color=KMD_DARK, family="Plus Jakarta Sans"),
-        title_font=dict(color=KMD_DARK, family="Plus Jakarta Sans"),
-        margin=dict(l=20, r=20, t=40, b=20),
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(color=WHITE, family="Plus Jakarta Sans"),
+        title_font=dict(color=WHITE, family="Plus Jakarta Sans"),
+        margin=dict(l=20, r=20, t=44, b=20),
         legend=dict(
-            bgcolor="rgba(255,255,255,0.90)",
-            bordercolor="rgba(229,231,235,1)",
+            bgcolor="rgba(6,15,30,.88)",
+            bordercolor="rgba(255,255,255,.10)",
             borderwidth=1,
-            font=dict(size=12)
+            font=dict(color=WHITE, size=12)
         )
     )
-    fig.update_xaxes(showgrid=True, gridcolor="rgba(229,231,235,0.8)", zeroline=False,
-                     tickfont=dict(size=11))
-    fig.update_yaxes(showgrid=True, gridcolor="rgba(229,231,235,0.8)", zeroline=False,
-                     tickfont=dict(size=11))
+    fig.update_xaxes(
+        showgrid=True, gridcolor="rgba(255,255,255,.06)",
+        zeroline=False, tickfont=dict(color=MUTED, size=11),
+        linecolor="rgba(255,255,255,.08)"
+    )
+    fig.update_yaxes(
+        showgrid=True, gridcolor="rgba(255,255,255,.06)",
+        zeroline=False, tickfont=dict(color=MUTED, size=11),
+        linecolor="rgba(255,255,255,.08)"
+    )
     return fig
 
-COLOR_SEQ = [KMD_RED, KMD_GOLD, KMD_RED_DARK, "#e85a6b", "#f4c055", "#8b0013", "#c0851a"]
+COLOR_SEQ = [GOLD_500, GOLD_400, "#e8a820", "#ffd740", "#b8860b", "#ffe57a", "#c8960c"]
 
-def page_banner(icon, title, subtitle):
+# ==================== HELPER COMPONENTS ====================
+def page_header(icon, title, subtitle, tag=""):
+    tag_html = f'<div class="kmd-ph-tag">{tag}</div>' if tag else ""
     st.markdown(f"""
-    <div class="kmd-page-banner">
-      <div class="pg-icon">{icon}</div>
+    <div class="kmd-ph">
+      <div class="kmd-ph-icon">{icon}</div>
       <div>
-        <div class="pg-title">{title}</div>
-        <div class="pg-sub">{subtitle}</div>
+        <div class="kmd-ph-title">{title}</div>
+        <div class="kmd-ph-sub">{subtitle}</div>
       </div>
+      {tag_html}
     </div>
     """, unsafe_allow_html=True)
+
+def section(label):
+    st.markdown(f'<div class="kmd-sec">{label}</div>', unsafe_allow_html=True)
+
+# ==================== TOP NAVBAR ====================
+st.markdown(f"""
+<div class="kmd-navbar">
+
+  <!-- Logo Kemendikdasmen -->
+  <img
+    src="{LOGO_URL}"
+    class="kmd-nb-logo"
+    alt="Kemendikdasmen"
+    onerror="this.style.display='none'"
+  />
+
+  <!-- Brand text -->
+  <div class="kmd-nb-brand">
+    <span class="k">Kemen</span><span class="d">dik</span><span class="s">dasmen</span>
+  </div>
+
+  <div class="kmd-nb-sep"></div>
+
+  <div class="kmd-nb-sub">
+    Balai Besar Penjaminan Mutu Pendidikan<br/>
+    Provinsi Bali &nbsp;•&nbsp; RDB 2026
+  </div>
+
+  <div class="kmd-nb-right">
+    <div class="kmd-nb-date">
+      {datetime.now().strftime('%A, %d %B')}<br/>
+      <strong style="color:{WHITE};">{datetime.now().strftime('%Y')}</strong>
+    </div>
+    <div class="kmd-nb-live">● LIVE</div>
+  </div>
+
+</div>
+""", unsafe_allow_html=True)
 
 # ==================== SIDEBAR ====================
 with st.sidebar:
     st.markdown(f"""
-    <div class="kmd-sidebar-brand">
-      <div class="kmd-sidebar-logo">📚</div>
-      <div class="kmd-sidebar-title">RDB BBP Bali 2026</div>
-      <div class="kmd-sidebar-sub">Sistem Informasi Pendataan Peserta</div>
-      <div class="kmd-sidebar-date">
-        🗓️ <strong>{datetime.now().strftime('%d %B %Y')}</strong>
+    <div class="kmd-sb-hdr">
+      <div class="kmd-sb-logo-box">
+        <img src="{LOGO_URL}" alt="Logo Kemendikdasmen"
+             onerror="this.outerHTML='<span style=\'font-size:28px\'>🏛️</span>'" />
+      </div>
+      <div class="kmd-sb-title">RDB BBP Bali 2026</div>
+      <div class="kmd-sb-sub">
+        Sistem Informasi Pendataan<br/>Peserta Rapat Dinas Bersama
+      </div>
+      <div class="kmd-sb-date">
+        🗓️&nbsp; <strong>{datetime.now().strftime('%d %B %Y')}</strong>
       </div>
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown('<div class="kmd-nav-label">🧭 Menu Navigasi</div>', unsafe_allow_html=True)
+    st.markdown('<div class="kmd-nav-lbl">⬡ Navigasi</div>', unsafe_allow_html=True)
 
     menu = st.radio(
         "Menu",
@@ -609,33 +781,24 @@ with st.sidebar:
     st.markdown("<hr/>", unsafe_allow_html=True)
 
     st.markdown(f"""
-    <div class="kmd-sidebar-footer">
-      <div style="font-size:10px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase;
-                  color:{KMD_MUTED}; margin-bottom:4px;">Kementerian Pendidikan</div>
-      <div style="font-size:12px; font-weight:700; color:{KMD_RED};">Dasar dan Menengah</div>
-      <div style="font-size:10px; color:{KMD_MUTED}; margin-top:4px;">Balai Besar Penjaminan Mutu</div>
-      <div style="font-size:10px; color:{KMD_MUTED};">Pendidikan Provinsi Bali</div>
+    <div class="kmd-sb-foot">
+      <div style="font-size:9px;font-weight:900;letter-spacing:2px;text-transform:uppercase;
+                  color:rgba(245,197,24,.40);margin-bottom:6px;">KEMENDIKDASMEN</div>
+      <div style="font-size:11px;font-weight:800;color:{GOLD_500};line-height:1.4;">
+        Dasar dan Menengah
+      </div>
+      <div style="font-size:10px;color:{MUTED};margin-top:5px;line-height:1.5;">
+        BBPMP Provinsi Bali
+      </div>
+      <div style="margin-top:8px;font-size:10px;font-weight:700;
+                  color:rgba(245,197,24,.30);">kemendikdasmen.go.id</div>
     </div>
     """, unsafe_allow_html=True)
 
-# ==================== GLOBAL HERO HEADER ====================
-st.markdown(f"""
-<div class="kmd-hero">
-  <div class="kmd-hero-inner">
-    <div class="kmd-hero-emblem">🏛️</div>
-    <div class="kmd-hero-text">
-      <div class="sup">Kementerian Pendidikan Dasar dan Menengah • Republik Indonesia</div>
-      <div class="title">Balai Besar Penjaminan Mutu Pendidikan Provinsi Bali</div>
-      <div class="sub">Sistem Pendataan Peserta Rapat Dinas Bersama • Tahun 2026</div>
-    </div>
-    <div class="kmd-hero-badge">🔴 LIVE {datetime.now().strftime('%Y')}</div>
-  </div>
-</div>
-""", unsafe_allow_html=True)
-
 # ==================== DASHBOARD ====================
 if menu == "🏠 Dashboard":
-    page_banner("🏠", "Dashboard Statistik RDB BBP Bali", "Ringkasan data & visualisasi peserta secara real-time")
+    page_header("🏠", "Dashboard Statistik RDB BBP Bali",
+                "Ringkasan data & visualisasi peserta secara real-time", "OVERVIEW")
 
     data = get_all_data()
 
@@ -656,57 +819,60 @@ if menu == "🏠 Dashboard":
 
         col1, col2 = st.columns(2)
         with col1:
-            st.markdown('<div class="kmd-section-title">Distribusi per Jenjang</div>', unsafe_allow_html=True)
+            section("Distribusi per Jenjang")
             jenjang_count = df["Jenjang"].value_counts()
             fig = px.pie(
                 values=jenjang_count.values,
                 names=jenjang_count.index,
-                hole=0.45,
+                hole=0.48,
                 color_discrete_sequence=COLOR_SEQ
             )
-            fig.update_traces(textposition="inside", textinfo="percent+label",
-                              textfont_size=12, textfont_family="Plus Jakarta Sans")
+            fig.update_traces(
+                textposition="inside", textinfo="percent+label",
+                textfont_size=12, textfont_color=NAVY_900,
+                marker=dict(line=dict(color=NAVY_800, width=2))
+            )
             st.plotly_chart(style_plotly(fig), use_container_width=True)
 
         with col2:
-            st.markdown('<div class="kmd-section-title">Peserta per Tahun</div>', unsafe_allow_html=True)
+            section("Peserta per Tahun")
             tahun_count = df["Tahun"].value_counts().sort_index()
             fig = px.bar(
                 x=tahun_count.index,
                 y=tahun_count.values,
                 labels={"x": "Tahun", "y": "Jumlah Peserta"},
             )
-            fig.update_traces(marker_color=KMD_RED, marker_line_color=KMD_RED_DARK,
-                              marker_line_width=1.5)
+            fig.update_traces(
+                marker_color=GOLD_500,
+                marker_line_color=NAVY_800,
+                marker_line_width=1.5,
+                opacity=0.92
+            )
             st.plotly_chart(style_plotly(fig), use_container_width=True)
 
         col1, col2 = st.columns(2)
         with col1:
-            st.markdown('<div class="kmd-section-title">Distribusi per Kabupaten</div>', unsafe_allow_html=True)
+            section("Distribusi per Kabupaten")
             kab_count = df["Kabupaten"].value_counts()
             fig = px.bar(
-                x=kab_count.values,
-                y=kab_count.index,
-                orientation="h",
+                x=kab_count.values, y=kab_count.index, orientation="h",
                 labels={"x": "Jumlah", "y": "Kabupaten"},
             )
-            fig.update_traces(marker_color=KMD_RED)
+            fig.update_traces(marker_color=GOLD_500, opacity=0.92)
             st.plotly_chart(style_plotly(fig), use_container_width=True)
 
         with col2:
-            st.markdown('<div class="kmd-section-title">Top 10 Instansi</div>', unsafe_allow_html=True)
+            section("Top 10 Instansi")
             top_inst = df["Instansi"].value_counts().head(10)
             fig = px.bar(
-                x=top_inst.values,
-                y=top_inst.index,
-                orientation="h",
+                x=top_inst.values, y=top_inst.index, orientation="h",
                 labels={"x": "Jumlah Peserta", "y": "Instansi"},
             )
-            fig.update_traces(marker_color=KMD_GOLD)
+            fig.update_traces(marker_color=GOLD_400, opacity=0.92)
             st.plotly_chart(style_plotly(fig), use_container_width=True)
 
         st.markdown("---")
-        st.markdown('<div class="kmd-section-title">Data Terbaru (10 Terakhir)</div>', unsafe_allow_html=True)
+        section("Data Terbaru (10 Terakhir)")
         st.dataframe(df.head(10), use_container_width=True, hide_index=True)
 
     else:
@@ -714,14 +880,15 @@ if menu == "🏠 Dashboard":
 
 # ==================== FILTER DATA ====================
 elif menu == "🔍 Filter Data":
-    page_banner("🔍", "Filter & Cari Data Peserta", "Cari dan filter data peserta dengan cepat dan akurat")
+    page_header("🔍", "Filter & Cari Data Peserta",
+                "Temukan data dengan pencarian dan filter yang presisi", "SEARCH")
 
     data = get_all_data()
 
     if data:
         df = pd.DataFrame(data, columns=["ID", "Nama", "Jenjang", "Instansi", "Kabupaten", "Tahun"])
 
-        st.markdown('<div class="kmd-section-title">🎯 Parameter Filter</div>', unsafe_allow_html=True)
+        section("🎯 Parameter Filter")
         col1, col2, col3, col4 = st.columns(4)
 
         with col1:
@@ -768,7 +935,8 @@ elif menu == "🔍 Filter Data":
 
 # ==================== TAMBAH DATA ====================
 elif menu == "➕ Tambah Data":
-    page_banner("➕", "Tambah Data Peserta Baru", "Input data peserta baru ke dalam sistem database")
+    page_header("➕", "Tambah Data Peserta Baru",
+                "Input data peserta baru ke dalam sistem database", "NEW ENTRY")
 
     with st.form("form_tambah", clear_on_submit=True):
         col1, col2 = st.columns(2)
@@ -802,14 +970,15 @@ elif menu == "➕ Tambah Data":
 
 # ==================== EDIT DATA ====================
 elif menu == "✏️ Edit Data":
-    page_banner("✏️", "Edit Data Peserta", "Muat data berdasarkan ID lalu perbarui informasinya")
+    page_header("✏️", "Edit Data Peserta",
+                "Muat data berdasarkan ID kemudian perbarui informasinya", "EDIT")
 
     data = get_all_data()
 
     if data:
         df = pd.DataFrame(data, columns=["ID", "Nama", "Jenjang", "Instansi", "Kabupaten", "Tahun"])
 
-        st.markdown('<div class="kmd-section-title">🔍 Cari Data</div>', unsafe_allow_html=True)
+        section("🔍 Cari Data")
         search = st.text_input("🔎 Cari berdasarkan Nama", placeholder="Ketik nama...")
 
         if search:
@@ -820,7 +989,7 @@ elif menu == "✏️ Edit Data":
         st.dataframe(df_search, use_container_width=True, hide_index=True)
 
         st.markdown("---")
-        st.markdown('<div class="kmd-section-title">✏️ Form Edit</div>', unsafe_allow_html=True)
+        section("✏️ Form Edit")
 
         id_edit = st.number_input("🆔 Masukkan ID yang ingin diedit", min_value=1, step=1)
 
@@ -875,7 +1044,8 @@ elif menu == "✏️ Edit Data":
 
 # ==================== HAPUS DATA ====================
 elif menu == "🗑️ Hapus Data":
-    page_banner("🗑️", "Hapus Data Peserta", "Penghapusan bersifat permanen — pastikan ID yang dipilih sudah benar")
+    page_header("🗑️", "Hapus Data Peserta",
+                "Penghapusan bersifat permanen — pastikan ID yang dipilih sudah benar", "DELETE")
 
     data = get_all_data()
 
@@ -884,7 +1054,7 @@ elif menu == "🗑️ Hapus Data":
 
         st.warning("⚠️ **Perhatian:** Penghapusan data bersifat permanen dan tidak dapat dibatalkan!")
 
-        st.markdown('<div class="kmd-section-title">🔍 Cari Data yang Akan Dihapus</div>', unsafe_allow_html=True)
+        section("🔍 Cari Data yang Akan Dihapus")
         search = st.text_input("🔎 Cari berdasarkan Nama", placeholder="Ketik nama...")
 
         if search:
@@ -916,14 +1086,15 @@ elif menu == "🗑️ Hapus Data":
 
 # ==================== REKAPAN ====================
 elif menu == "📊 Rekapan":
-    page_banner("📊", "Rekapan Statistik Lengkap", "Statistik komprehensif per kategori beserta unduhan laporan resmi")
+    page_header("📊", "Rekapan Statistik Lengkap",
+                "Statistik komprehensif per kategori beserta unduhan laporan resmi", "REPORT")
 
     data = get_all_data()
 
     if data:
         df = pd.DataFrame(data, columns=["ID", "Nama", "Jenjang", "Instansi", "Kabupaten", "Tahun"])
 
-        st.markdown('<div class="kmd-section-title">📈 Ringkasan Umum</div>', unsafe_allow_html=True)
+        section("📈 Ringkasan Umum")
         col1, col2, col3, col4 = st.columns(4)
         with col1:
             st.metric("Total Peserta", len(df))
@@ -945,8 +1116,8 @@ elif menu == "📊 Rekapan":
                 with col1:
                     st.dataframe(df_stats, use_container_width=True, hide_index=True)
                 with col2:
-                    fig = px.bar(df_stats, x="Jenjang", y="Jumlah", color_discrete_sequence=[KMD_RED])
-                    fig.update_traces(marker_color=KMD_RED)
+                    fig = px.bar(df_stats, x="Jenjang", y="Jumlah")
+                    fig.update_traces(marker_color=GOLD_500, opacity=0.92)
                     st.plotly_chart(style_plotly(fig), use_container_width=True)
 
         with tab2:
@@ -958,8 +1129,11 @@ elif menu == "📊 Rekapan":
                     st.dataframe(df_stats, use_container_width=True, hide_index=True)
                 with col2:
                     fig = px.line(df_stats, x="Tahun", y="Jumlah", markers=True)
-                    fig.update_traces(line=dict(color=KMD_RED, width=3),
-                                      marker=dict(color=KMD_GOLD, size=10, line=dict(color=KMD_RED, width=2)))
+                    fig.update_traces(
+                        line=dict(color=GOLD_500, width=3),
+                        marker=dict(color=GOLD_400, size=10,
+                                    line=dict(color=NAVY_800, width=2))
+                    )
                     st.plotly_chart(style_plotly(fig), use_container_width=True)
 
         with tab3:
@@ -971,7 +1145,7 @@ elif menu == "📊 Rekapan":
                     st.dataframe(df_stats, use_container_width=True, hide_index=True)
                 with col2:
                     fig = px.bar(df_stats, y="Kabupaten", x="Jumlah", orientation="h")
-                    fig.update_traces(marker_color=KMD_RED)
+                    fig.update_traces(marker_color=GOLD_500, opacity=0.92)
                     st.plotly_chart(style_plotly(fig), use_container_width=True)
 
         with tab4:
@@ -993,11 +1167,12 @@ elif menu == "📊 Rekapan":
 
 # ==================== UPLOAD EXCEL ====================
 elif menu == "📤 Upload Excel":
-    page_banner("📤", "Upload Data dari Excel / CSV", "Unggah data peserta massal dengan validasi otomatis sebelum disimpan")
+    page_header("📤", "Upload Data dari Excel / CSV",
+                "Unggah data peserta massal dengan validasi otomatis sebelum disimpan", "IMPORT")
 
     st.markdown("""
     ### 📋 Format File Excel
-    File Excel harus memiliki kolom berikut (urutan bebas, **case-insensitive**):
+    File harus memiliki kolom berikut (urutan bebas, **case-insensitive**):
     - **nama** — Nama lengkap peserta
     - **jenjang** — Jenjang pendidikan
     - **instansi** — Nama sekolah / instansi
@@ -1042,24 +1217,23 @@ elif menu == "📤 Upload Excel":
             df_upload.columns = df_upload.columns.str.lower().str.strip()
             st.info(f"📋 Kolom yang terdeteksi: {', '.join(df_upload.columns.tolist())}")
 
-            st.markdown('<div class="kmd-section-title">👀 Preview Data</div>', unsafe_allow_html=True)
+            section("👀 Preview Data")
             st.dataframe(df_upload.head(10), use_container_width=True)
 
             required_cols = ["nama", "jenjang", "instansi", "kabupaten", "tahun"]
-
             missing_cols = []
             for col in required_cols:
                 if col not in df_upload.columns:
                     similar = [c for c in df_upload.columns if col in c or c in col]
                     if similar:
-                        st.warning(f"⚠️ Kolom '{col}' tidak ditemukan, tapi ada '{similar[0]}'. Akan digunakan sebagai '{col}'.")
+                        st.warning(f"⚠️ Kolom '{col}' tidak ditemukan, tapi ada '{similar[0]}'. Akan digunakan.")
                         df_upload.rename(columns={similar[0]: col}, inplace=True)
                     else:
                         missing_cols.append(col)
 
             if missing_cols:
-                st.error(f"❌ Kolom berikut tidak ditemukan: {', '.join(missing_cols)}")
-                st.info("💡 Pastikan nama kolom di Excel sesuai: nama, jenjang, instansi, kabupaten, tahun")
+                st.error(f"❌ Kolom tidak ditemukan: {', '.join(missing_cols)}")
+                st.info("💡 Pastikan nama kolom sesuai: nama, jenjang, instansi, kabupaten, tahun")
             else:
                 st.success("✅ Semua kolom required tersedia!")
 
@@ -1068,18 +1242,20 @@ elif menu == "📤 Upload Excel":
                     df_upload[col] = df_upload[col].astype(str).str.strip()
                 df_upload["tahun"] = pd.to_numeric(df_upload["tahun"], errors="coerce").fillna(0).astype(int)
 
-                st.markdown('<div class="kmd-section-title">📊 Hasil Validasi Data</div>', unsafe_allow_html=True)
+                section("📊 Hasil Validasi Data")
                 col1, col2, col3, col4 = st.columns(4)
 
                 with col1:
                     null_count = df_upload[required_cols].isnull().sum().sum()
-                    st.metric("Data Kosong", null_count, delta="harus 0" if null_count > 0 else "✓", delta_color="inverse")
+                    st.metric("Data Kosong", null_count,
+                              delta="harus 0" if null_count > 0 else "✓", delta_color="inverse")
                 with col2:
                     jenjang_unique = df_upload["jenjang"].nunique()
                     st.metric("Jenjang Unik", jenjang_unique)
                 with col3:
                     duplicates = df_upload.duplicated(subset=["nama", "tahun"]).sum()
-                    st.metric("Duplikat", duplicates, delta="harus 0" if duplicates > 0 else "✓", delta_color="inverse")
+                    st.metric("Duplikat", duplicates,
+                              delta="harus 0" if duplicates > 0 else "✓", delta_color="inverse")
                 with col4:
                     invalid_tahun = (df_upload["tahun"] < 2000).sum() + (df_upload["tahun"] > 2100).sum()
                     st.metric("Tahun Valid", f"{len(df_upload) - invalid_tahun}/{len(df_upload)}")
@@ -1094,14 +1270,14 @@ elif menu == "📤 Upload Excel":
 
                 unique_jenjang = df_upload["jenjang"].unique().tolist()
                 if len(unique_jenjang) <= 10:
-                    st.info(f"📚 Jenjang yang ditemukan: {', '.join(unique_jenjang)}")
+                    st.info(f"📚 Jenjang ditemukan: {', '.join(unique_jenjang)}")
                 else:
-                    st.info(f"📚 Jenjang yang ditemukan: {', '.join(unique_jenjang[:10])} ... (dan {len(unique_jenjang)-10} lainnya)")
+                    st.info(f"📚 Jenjang ditemukan: {', '.join(unique_jenjang[:10])} ... (+{len(unique_jenjang)-10})")
 
                 st.markdown("---")
                 col1, col2 = st.columns([3, 1])
                 with col1:
-                    st.markdown('<div class="kmd-section-title">📤 Upload ke Database</div>', unsafe_allow_html=True)
+                    section("📤 Upload ke Database")
                     st.info(f"Siap mengupload **{len(df_upload)}** data ke database")
                 with col2:
                     st.markdown("<br>", unsafe_allow_html=True)
@@ -1111,7 +1287,7 @@ elif menu == "📤 Upload Excel":
                     if null_count > 0:
                         st.error("❌ Masih ada data yang kosong!")
                     elif invalid_tahun > 0:
-                        st.error("❌ Ada tahun yang tidak valid! Harus antara 2000-2100")
+                        st.error("❌ Ada tahun tidak valid! Harus 2000–2100")
                     else:
                         with st.spinner("⏳ Mengupload data ke database..."):
                             data_to_insert = df_upload[required_cols].to_dict("records")
@@ -1131,7 +1307,7 @@ elif menu == "📤 Upload Excel":
 
                                 progress = (idx + 1) / len(data_to_insert)
                                 progress_bar.progress(progress)
-                                status_text.text(f"Uploading... {idx + 1}/{len(data_to_insert)}")
+                                status_text.text(f"Uploading... {idx+1}/{len(data_to_insert)}")
 
                             progress_bar.empty()
                             status_text.empty()
@@ -1140,10 +1316,10 @@ elif menu == "📤 Upload Excel":
                                 st.success(f"🎉 Berhasil mengupload semua {success_count} data!")
                                 st.balloons()
                             elif success_count > 0:
-                                st.warning(f"⚠️ Berhasil: {success_count}, Gagal: {failed_count}")
+                                st.warning(f"⚠️ Berhasil: {success_count} | Gagal: {failed_count}")
                             else:
                                 st.error("❌ Gagal mengupload semua data.")
 
         except Exception as e:
             st.error(f"❌ Error membaca file: {str(e)}")
-            st.info("💡 Pastikan file Excel tidak corrupt dan format sesuai template")
+            st.info("💡 Pastikan file tidak corrupt dan format sesuai template")
